@@ -45,7 +45,7 @@ namespace Au
                 return bundle;
             }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !USING_BUNDLE
             return await LoadBundleEditor(name, progress);
 #else
             return await LoadBundleRuntime(name, progress);
@@ -78,7 +78,7 @@ namespace Au
             {
                 return obj;
             }
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !USING_BUNDLE
             return await LoadObjectEditor(path, type);
 #else
             return await LoadObjectRuntime(path, type);

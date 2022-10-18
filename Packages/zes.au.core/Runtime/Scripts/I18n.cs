@@ -12,12 +12,12 @@ namespace Au
         /// <summary>
         /// Translator function
         /// </summary>
-        public static Func<int, string> translator = null;
+        public static Func<string, string> translator = null;
 
         /// <summary>
         /// Language ID to translator
         /// </summary>
-        public int languageId;
+        public string languageId;
 
 
         private void Start()

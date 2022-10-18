@@ -1,0 +1,16 @@
+{
+  "name": "zes.au.core",
+  "displayName": "Au Core",
+  "version": "0.1.0",
+  "description": "Au Core library for Unity3D",
+  "keywords": ["Au", "Framework", "Core", "Library"],
+  "author": {
+    "name": "Stanley Hou",
+    "email": "houyuqing@hotmail.com",
+    "url": "https://github.com/zhihesoft/zes-unity-au-core"
+  },
+  "category": "Libraries",
+  "dependencies": {
+	"com.unity.textmeshpro": "3.0.6"
+  }
+}

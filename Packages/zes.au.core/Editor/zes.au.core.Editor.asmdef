@@ -1,0 +1,16 @@
+{
+    "name": "zes.au.core.Editor",
+    "rootNamespace": "",
+    "references": ["zes.au.core"],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

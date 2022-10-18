@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -9,30 +10,86 @@ namespace Au
     /// </summary>
     public class I18n : MonoBehaviour
     {
-        /// <summary>
-        /// Translator function
-        /// </summary>
-        public static Func<string, string> translator = null;
+        public static readonly string LanguageCN = "zh-cn";
+        public static readonly string LanguageHK = "zh-hk";
+        public static readonly string LanguageJP = "ja-jp";
+        public static readonly string LanguageUS = "en-us";
+        public static readonly string LanguageKR = "ko-kr";
+
+        private static Log log = Log.GetLogger<I18n>();
+
+        private static Dictionary<string, I18nData> items = new Dictionary<string, I18nData>();
+
+        public static string CurrentLanguage = LanguageCN;
+
+        public static void AddData(string name, string json)
+        {
+            if (items.ContainsKey(name))
+            {
+                log.Error($"i18n data {name} already exists");
+                return;
+            }
+
+            items.Add(name, new I18nData(name, json));
+        }
+
+        public static void RemoveData(string name)
+        {
+            items.Remove(name);
+        }
+
+        public static void AddAddition(string name, string addition, string json)
+        {
+            if (!items.ContainsKey(name))
+            {
+                log.Error($"add i18n addition data {addition} failed, i18n data {name} not exists");
+                return;
+            }
+
+            var data = items[name];
+            data.AddAddition(addition, json);
+        }
+
+        public static void RemoveAddition(string name, string addition, string json)
+        {
+            if (!items.ContainsKey(name))
+            {
+                log.Error($"remove i18n addition data {addition} failed, i18n data {name} not exists");
+                return;
+            }
+
+            var data = items[name];
+            data.RemoveAddition(addition);
+        }
 
         /// <summary>
         /// Language ID to translator
         /// </summary>
         public string languageId;
 
-
-        private void Start()
+        public void Refresh()
         {
             SetText(GetText());
         }
 
+        private void Start()
+        {
+            Refresh();
+        }
+
         private string GetText()
         {
-            if (translator == null)
+            if (!items.TryGetValue(CurrentLanguage, out var data))
             {
-                Debug.LogWarning($"No translator installed, i18n will return only id");
+                log.Warn($"No translator for {CurrentLanguage} installed, i18n will return only id");
                 return languageId;
             }
-            return translator.Invoke(languageId);
+            if (!data.TryTranslate(languageId, out var str))
+            {
+                log.Warn($"No translator for {languageId}, i18n will return only id");
+                return languageId;
+            }
+            return str;
         }
 
         private void SetText(string value)

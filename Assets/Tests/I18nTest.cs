@@ -11,7 +11,7 @@ internal class I18nTest
     {
         I18n.translator = (id) =>
         {
-            if (id == 1)
+            if (id == "1")
             {
                 return "test";
             }
@@ -25,13 +25,13 @@ internal class I18nTest
         var txt = go.AddComponent<TextMeshProUGUI>();
         await Task.Yield();
         var i18n = go.AddComponent<I18n>();
-        i18n.languageId = 1;
+        i18n.languageId = "1";
         await Task.Yield();
         Assert.AreEqual(txt.text, "test");
 
         Object.Destroy(i18n);
         i18n = go.AddComponent<I18n>();
-        i18n.languageId = 0;
+        i18n.languageId = "0";
         await Task.Yield();
         Assert.AreEqual(txt.text, "failed");
 

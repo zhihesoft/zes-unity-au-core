@@ -30,7 +30,7 @@ namespace Au
             if (translator == null)
             {
                 Debug.LogWarning($"No translator installed, i18n will return only id");
-                return languageId.ToString();
+                return languageId;
             }
             return translator.Invoke(languageId);
         }

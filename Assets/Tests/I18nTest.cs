@@ -28,8 +28,17 @@ internal class I18nTest
         i18n.languageId = "18000";
         await Task.Yield();
         Assert.AreEqual(txt.text, "测试怪01");
-        I18n.RemoveData(I18n.LanguageCN);
 
+        i18n.languageId = "700001";
+        i18n.Refresh();
+        Assert.AreEqual(txt.text, "700001", "700001 is not in current set, so it is id only");
+
+        json = await Files.Read(Path.Combine("Assets", "Bundles", "languages", "i18n-en-us.json"));
+        I18n.AddAddition(I18n.LanguageCN, "us", json);
+        i18n.Refresh();
+        Assert.AreEqual(txt.text, "xxxxxxxxx", "700001 should be set");
+
+        I18n.RemoveData(I18n.LanguageCN);
         Object.Destroy(go);
     }
 }

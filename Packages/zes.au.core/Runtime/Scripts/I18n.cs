@@ -67,6 +67,9 @@ namespace Au
         /// </summary>
         public string languageId;
 
+        /// <summary>
+        /// Refresh translator result
+        /// </summary>
         public void Refresh()
         {
             SetText(GetText());

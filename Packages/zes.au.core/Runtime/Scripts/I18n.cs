@@ -50,38 +50,38 @@ namespace Au
         }
 
         /// <summary>
-        /// Add an addition i18n data to {name}
+        /// Add an additive i18n data to {name}
         /// </summary>
         /// <param name="name">languange name</param>
-        /// <param name="addition">addition name</param>
+        /// <param name="additive">additive name</param>
         /// <param name="json">json data</param>
-        public static void AddAddition(string name, string addition, string json)
+        public static void AddAdditive(string name, string additive, string json)
         {
             if (!items.ContainsKey(name))
             {
-                log.Error($"add i18n addition data {addition} failed, i18n data {name} not exists");
+                log.Error($"add i18n additive data {additive} failed, i18n data {name} not exists");
                 return;
             }
 
             var data = items[name];
-            data.AddAddition(addition, json);
+            data.AddAdditive(additive, json);
         }
 
         /// <summary>
-        /// Remove addition i18n data
+        /// Remove additive i18n data
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="addition"></param>
-        public static void RemoveAddition(string name, string addition)
+        /// <param name="additive"></param>
+        public static void RemoveAdditive(string name, string additive)
         {
             if (!items.ContainsKey(name))
             {
-                log.Error($"remove i18n addition data {addition} failed, i18n data {name} not exists");
+                log.Error($"remove i18n additive data {additive} failed, i18n data {name} not exists");
                 return;
             }
 
             var data = items[name];
-            data.RemoveAddition(addition);
+            data.RemoveAdditive(additive);
         }
 
         /// <summary>

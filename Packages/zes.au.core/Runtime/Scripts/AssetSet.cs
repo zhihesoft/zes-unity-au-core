@@ -3,6 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
+using UnityEngine.Diagnostics;
+using UnityEngine.Events;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -82,8 +86,33 @@ namespace Au
 #else
             return await LoadObjectRuntime(path, type);
 #endif
-
         }
+
+        /// <summary>
+        /// Load scene
+        /// the bundle which contains scene should be loaded at first
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="additive"></param>
+        /// <param name="progress"></param>
+        /// <returns></returns>
+        public async Task<Scene> LoadScene(string name, bool additive, System.Action<float> progress)
+        {
+
+            Scene loadedScene = default(Scene);
+            UnityAction<Scene, LoadSceneMode> loadCallback = (scene, mode) => loadedScene = scene;
+            SceneManager.sceneLoaded += loadCallback;
+            var loadparams = new LoadSceneParameters(additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
+#if UNITY_EDITOR && !USING_BUNDLE
+            var op = EditorSceneManager.LoadSceneAsyncInPlayMode(name, loadparams);
+#else
+            var op = SceneManager.LoadSceneAsync(name, loadparams);
+#endif
+            await Async.WaitAsyncOperation(op, progress);
+            SceneManager.sceneLoaded -= loadCallback;
+            return loadedScene;
+        }
+
 
 #if UNITY_EDITOR
         private async Task<bool> LoadBundleEditor(string name, System.Action<float> progress)

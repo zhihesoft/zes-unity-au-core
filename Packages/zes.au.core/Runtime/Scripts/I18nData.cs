@@ -22,26 +22,26 @@ namespace Au
 
         private readonly Dictionary<string, string> items;
 
-        private readonly Dictionary<string, I18nData> additions = new Dictionary<string, I18nData>();
+        private readonly Dictionary<string, I18nData> additives = new Dictionary<string, I18nData>();
 
         /// <summary>
-        /// Add addition i18n data
+        /// Add additive i18n data
         /// </summary>
         /// <param name="name"></param>
         /// <param name="json"></param>
-        public void AddAddition(string name, string json)
+        public void AddAdditive(string name, string json)
         {
             var data = new I18nData(name, json);
-            additions.Add(name, data);
+            additives.Add(name, data);
         }
 
         /// <summary>
-        /// Remove addition data
+        /// Remove additive data
         /// </summary>
         /// <param name="name"></param>
-        public void RemoveAddition(string name)
+        public void RemoveAdditive(string name)
         {
-            additions.Remove(name);
+            additives.Remove(name);
         }
 
         /// <summary>
@@ -57,9 +57,9 @@ namespace Au
                 return true;
             }
 
-            foreach (var addition in additions.Values)
+            foreach (var additive in additives.Values)
             {
-                if (addition.TryTranslate(id, out ret))
+                if (additive.TryTranslate(id, out ret))
                 {
                     return true;
                 }

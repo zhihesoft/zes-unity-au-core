@@ -34,7 +34,7 @@ internal class I18nTest
         Assert.AreEqual(txt.text, "700001", "700001 is not in current set, so it is id only");
 
         json = await Files.Read(Path.Combine("Assets", "Bundles", "languages", "i18n-en-us.json"));
-        I18n.AddAddition(I18n.LanguageCN, "us", json);
+        I18n.AddAdditive(I18n.LanguageCN, "us", json);
         i18n.Refresh();
         Assert.AreEqual(txt.text, "xxxxxxxxx", "700001 should be set");
 

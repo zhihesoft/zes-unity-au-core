@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
-using UnityEngine.Diagnostics;
 using UnityEngine.Events;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -111,6 +110,18 @@ namespace Au
             await Async.WaitAsyncOperation(op, progress);
             SceneManager.sceneLoaded -= loadCallback;
             return loadedScene;
+        }
+
+        /// <summary>
+        /// Unload one scene
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <returns></returns>
+        public async Task<bool> UnloadScene(Scene scene)
+        {
+            var op = SceneManager.UnloadSceneAsync(scene);
+            await Async.WaitAsyncOperation(op);
+            return true;
         }
 
 

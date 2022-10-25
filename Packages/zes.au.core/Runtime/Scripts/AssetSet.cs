@@ -18,6 +18,43 @@ namespace Au
     public class AssetSet
     {
         /// <summary>
+        /// Load scene
+        /// the bundle which contains scene should be loaded at first
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="additive"></param>
+        /// <param name="progress"></param>
+        /// <returns></returns>
+        public static async Task<Scene> LoadScene(string name, bool additive, System.Action<float> progress)
+        {
+
+            Scene loadedScene = default(Scene);
+            UnityAction<Scene, LoadSceneMode> loadCallback = (scene, mode) => loadedScene = scene;
+            SceneManager.sceneLoaded += loadCallback;
+            var loadparams = new LoadSceneParameters(additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
+#if UNITY_EDITOR && !USING_BUNDLE
+            var op = EditorSceneManager.LoadSceneAsyncInPlayMode(name, loadparams);
+#else
+            var op = SceneManager.LoadSceneAsync(name, loadparams);
+#endif
+            await Async.WaitAsyncOperation(op, progress);
+            SceneManager.sceneLoaded -= loadCallback;
+            return loadedScene;
+        }
+
+        /// <summary>
+        /// Unload one scene
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <returns></returns>
+        public static async Task<bool> UnloadScene(Scene scene)
+        {
+            var op = SceneManager.UnloadSceneAsync(scene);
+            await Async.WaitAsyncOperation(op);
+            return true;
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="basePath">assets baseurl, relative to persistent data path</param>
@@ -76,6 +113,9 @@ namespace Au
             }
         }
 
+        /// <summary>
+        /// Unload all bundles
+        /// </summary>
         public void UnloadAllBundles()
         {
             bundles.Values.ToList().ForEach(bundle => bundle?.Unload(true));
@@ -116,43 +156,6 @@ namespace Au
 #else
             return await LoadObjectRuntime(path, type);
 #endif
-        }
-
-        /// <summary>
-        /// Load scene
-        /// the bundle which contains scene should be loaded at first
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="additive"></param>
-        /// <param name="progress"></param>
-        /// <returns></returns>
-        public async Task<Scene> LoadScene(string name, bool additive, System.Action<float> progress)
-        {
-
-            Scene loadedScene = default(Scene);
-            UnityAction<Scene, LoadSceneMode> loadCallback = (scene, mode) => loadedScene = scene;
-            SceneManager.sceneLoaded += loadCallback;
-            var loadparams = new LoadSceneParameters(additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
-#if UNITY_EDITOR && !USING_BUNDLE
-            var op = EditorSceneManager.LoadSceneAsyncInPlayMode(name, loadparams);
-#else
-            var op = SceneManager.LoadSceneAsync(name, loadparams);
-#endif
-            await Async.WaitAsyncOperation(op, progress);
-            SceneManager.sceneLoaded -= loadCallback;
-            return loadedScene;
-        }
-
-        /// <summary>
-        /// Unload one scene
-        /// </summary>
-        /// <param name="scene"></param>
-        /// <returns></returns>
-        public async Task<bool> UnloadScene(Scene scene)
-        {
-            var op = SceneManager.UnloadSceneAsync(scene);
-            await Async.WaitAsyncOperation(op);
-            return true;
         }
 
 

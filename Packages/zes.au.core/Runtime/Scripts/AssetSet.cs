@@ -74,11 +74,11 @@ namespace Au
         }
 
         /// <summary>
-        /// Whether asset exists in set
+        /// Whether asset object exists in set
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public bool IsAssetExist(string path)
+        public bool ObjectExists(string path)
         {
             return assets2bundle.ContainsKey(path.ToLower());
         }
@@ -96,7 +96,7 @@ namespace Au
                 return obj;
             }
 
-            if (parent != null && parent.IsAssetExist(path))
+            if (parent != null && parent.ObjectExists(path))
             {
                 return await parent.LoadObject(path, type);
             }

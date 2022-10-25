@@ -35,7 +35,7 @@ namespace Au
         private readonly Dictionary<string, Pending> pendings = new Dictionary<string, Pending>();
         private readonly Dictionary<string, AssetBundle> bundles = new Dictionary<string, AssetBundle>();
         private readonly Dictionary<string, Object> assets = new Dictionary<string, Object>();
-        private Dictionary<string, string> assets2bundle = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> assets2bundle = new Dictionary<string, string>();
         private readonly Log log = Log.GetLogger<AssetSet>();
 
         /// <summary>
@@ -68,9 +68,19 @@ namespace Au
             if (bundles.TryGetValue(name, out var bundle))
             {
                 bundles.Remove(name);
-                assets2bundle = assets2bundle.Where(i => i.Value != name).ToDictionary(i => i.Key, i => i.Value);
                 bundle?.Unload(true);
+                assets2bundle
+                    .Where(i => i.Value == name)
+                    .ToList()
+                    .ForEach(i => assets2bundle.Remove(i.Key));
             }
+        }
+
+        public void UnloadAllBundles()
+        {
+            bundles.Values.ToList().ForEach(bundle => bundle?.Unload(true));
+            bundles.Clear();
+            assets2bundle.Clear();
         }
 
         /// <summary>

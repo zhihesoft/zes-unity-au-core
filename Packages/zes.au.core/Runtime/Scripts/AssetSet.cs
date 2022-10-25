@@ -18,49 +18,25 @@ namespace Au
     public class AssetSet
     {
         /// <summary>
-        /// Load scene
-        /// the bundle which contains scene should be loaded at first
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="additive"></param>
-        /// <param name="progress"></param>
-        /// <returns></returns>
-        public static async Task<Scene> LoadScene(string name, bool additive, System.Action<float> progress)
-        {
-
-            Scene loadedScene = default(Scene);
-            UnityAction<Scene, LoadSceneMode> loadCallback = (scene, mode) => loadedScene = scene;
-            SceneManager.sceneLoaded += loadCallback;
-            var loadparams = new LoadSceneParameters(additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
-#if UNITY_EDITOR && !USING_BUNDLE
-            var op = EditorSceneManager.LoadSceneAsyncInPlayMode(name, loadparams);
-#else
-            var op = SceneManager.LoadSceneAsync(name, loadparams);
-#endif
-            await Async.WaitAsyncOperation(op, progress);
-            SceneManager.sceneLoaded -= loadCallback;
-            return loadedScene;
-        }
-
-        /// <summary>
-        /// Unload one scene
-        /// </summary>
-        /// <param name="scene"></param>
-        /// <returns></returns>
-        public static async Task<bool> UnloadScene(Scene scene)
-        {
-            var op = SceneManager.UnloadSceneAsync(scene);
-            await Async.WaitAsyncOperation(op);
-            return true;
-        }
-
-        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="basePath">assets baseurl, relative to persistent data path</param>
         public AssetSet(string basePath)
         {
             this.basePath = Path.Combine(Application.persistentDataPath, basePath);
+        }
+
+        /// <summary>
+        /// Dispose the assets set
+        /// </summary>
+        public async Task<bool> Close()
+        {
+            foreach (var scene in scenes.ToList())
+            {
+                await UnloadScene(scene);
+            }
+            UnloadAllBundles();
+            return true;
         }
 
         /// <summary>
@@ -85,6 +61,7 @@ namespace Au
         private readonly Dictionary<string, AssetBundle> bundles = new Dictionary<string, AssetBundle>();
         private readonly Dictionary<string, Object> assets = new Dictionary<string, Object>();
         private readonly Dictionary<string, string> assets2bundle = new Dictionary<string, string>();
+        private readonly List<Scene> scenes = new List<Scene>();
         private readonly Log log = Log.GetLogger<AssetSet>();
 
         /// <summary>
@@ -133,6 +110,44 @@ namespace Au
             bundles.Values.ToList().ForEach(bundle => bundle?.Unload(true));
             bundles.Clear();
             assets2bundle.Clear();
+        }
+
+        /// <summary>
+        /// Load scene
+        /// the bundle which contains scene should be loaded at first
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="additive"></param>
+        /// <param name="progress"></param>
+        /// <returns></returns>
+        public async Task<Scene> LoadScene(string name, bool additive, System.Action<float> progress)
+        {
+            Scene loadedScene = default(Scene);
+            UnityAction<Scene, LoadSceneMode> loadCallback = (scene, mode) => loadedScene = scene;
+            SceneManager.sceneLoaded += loadCallback;
+            var loadparams = new LoadSceneParameters(additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
+#if UNITY_EDITOR && !USING_BUNDLE
+            var op = EditorSceneManager.LoadSceneAsyncInPlayMode(name, loadparams);
+#else
+            var op = SceneManager.LoadSceneAsync(name, loadparams);
+#endif
+            await Async.WaitAsyncOperation(op, progress);
+            SceneManager.sceneLoaded -= loadCallback;
+            scenes.Add(loadedScene);
+            return loadedScene;
+        }
+
+        /// <summary>
+        /// Unload one scene
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <returns></returns>
+        public async Task<bool> UnloadScene(Scene scene)
+        {
+            var op = SceneManager.UnloadSceneAsync(scene);
+            await Async.WaitAsyncOperation(op);
+            scenes.Remove(scene);
+            return true;
         }
 
         /// <summary>

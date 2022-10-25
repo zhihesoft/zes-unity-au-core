@@ -64,9 +64,21 @@ namespace Au
         }
 
         /// <summary>
+        /// Create a child asset set
+        /// </summary>
+        /// <param name="basePath"></param>
+        /// <returns></returns>
+        public AssetSet CreateChild(string basePath)
+        {
+            AssetSet child = new AssetSet(basePath);
+            child.parent = this;
+            return child;
+        }
+
+        /// <summary>
         /// Parent set
         /// </summary>
-        public AssetSet parent { get; set; }
+        public AssetSet parent { get; private set; }
 
         private readonly string basePath;
         private readonly Dictionary<string, Pending> pendings = new Dictionary<string, Pending>();

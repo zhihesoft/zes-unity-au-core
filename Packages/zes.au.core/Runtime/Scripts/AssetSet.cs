@@ -26,6 +26,11 @@ namespace Au
             this.basePath = Path.Combine(Application.persistentDataPath, basePath);
         }
 
+        /// <summary>
+        /// Parent set
+        /// </summary>
+        public AssetSet parent { get; set; }
+
         private readonly string basePath;
         private readonly Dictionary<string, Pending> pendings = new Dictionary<string, Pending>();
         private readonly Dictionary<string, AssetBundle> bundles = new Dictionary<string, AssetBundle>();
@@ -69,6 +74,16 @@ namespace Au
         }
 
         /// <summary>
+        /// Whether asset exists in set
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public bool IsAssetExist(string path)
+        {
+            return assets2bundle.ContainsKey(path.ToLower());
+        }
+
+        /// <summary>
         /// Load an object from loaded bundle
         /// </summary>
         /// <param name="path"></param>
@@ -80,6 +95,12 @@ namespace Au
             {
                 return obj;
             }
+
+            if (parent != null && parent.IsAssetExist(path))
+            {
+                return await parent.LoadObject(path, type);
+            }
+
 #if UNITY_EDITOR && !USING_BUNDLE
             return await LoadObjectEditor(path, type);
 #else

@@ -64,15 +64,29 @@ namespace Au
         }
 
         /// <summary>
-        /// Build bundles to output path dir
+        /// Build Bundles from input path (dir)
+        /// Use active build target as bundle target platform
         /// </summary>
+        /// <param name="inputPath"></param>
         /// <param name="outputPath"></param>
-        /// <param name="target"></param>
-        public static void BuildBundles(string outputPath, BuildTarget target)
+        public static void BuildBundles(string inputPath, string outputPath)
         {
-            Files.EnsureDir(outputPath);
-            BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.None, target);
+            BuildBundles(inputPath, outputPath, EditorUserBuildSettings.activeBuildTarget);
         }
 
+        /// <summary>
+        /// Build Bundles from input path (dir)
+        /// </summary>
+        /// <param name="inputPath"></param>
+        /// <param name="outputPath"></param>
+        /// <param name="target"></param>
+        public static void BuildBundles(string inputPath, string outputPath, BuildTarget target)
+        {
+            ClearBundleNames();
+            AutoCreateBundleNames(inputPath);
+            Files.EnsureDir(outputPath);
+            BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.None, target);
+            AssetDatabase.Refresh();
+        }
     }
 }

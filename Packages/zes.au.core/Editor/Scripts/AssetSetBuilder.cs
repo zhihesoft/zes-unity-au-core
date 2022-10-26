@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using UnityEditor;
 
 namespace Au
@@ -26,6 +27,38 @@ namespace Au
                 }
                 importer.assetBundleName = dir.Name.ToLower();
             }
+            AssetDatabase.RemoveUnusedAssetBundleNames();
+            AssetDatabase.Refresh();
+        }
+
+        /// <summary>
+        /// Clear all bundle names
+        /// </summary>
+        /// <param name="path"></param>
+        public static void ClearBundleNames(string path = "Assets")
+        {
+            DirectoryInfo dir = new DirectoryInfo(path);
+            if (!dir.Exists)
+            {
+                return;
+            }
+
+            dir.GetFiles()
+                .Select(file => AssetImporter.GetAtPath(file.FullName))
+                .Where(i => i != null)
+                .Where(i => !string.IsNullOrEmpty(i.assetBundleName))
+                .ToList()
+                .ForEach(i => i.assetBundleName = string.Empty);
+
+
+            dir.GetDirectories()
+                .Select(d => AssetImporter.GetAtPath(d.FullName))
+                .Where(i => i != null)
+                .Where(i => !string.IsNullOrEmpty(i.assetBundleName))
+                .ToList()
+                .ForEach(i => i.assetBundleName = string.Empty);
+
+            dir.GetDirectories().ToList().ForEach(d => ClearBundleNames(d.FullName));
             AssetDatabase.RemoveUnusedAssetBundleNames();
             AssetDatabase.Refresh();
         }

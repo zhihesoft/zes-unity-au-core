@@ -1,7 +1,7 @@
 {
   "name": "zes.au.core",
   "displayName": "Au Core",
-  "version": "0.1.12",
+  "version": "0.1.15",
   "description": "Au Core library for Unity3D",
   "keywords": ["Au", "Framework", "Core", "Library"],
   "author": {

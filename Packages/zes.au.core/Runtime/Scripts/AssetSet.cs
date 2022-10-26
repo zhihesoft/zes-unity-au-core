@@ -4,11 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEditor.SceneManagement;
 using UnityEngine.Events;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace Au
 {
@@ -127,7 +123,7 @@ namespace Au
             SceneManager.sceneLoaded += loadCallback;
             var loadparams = new LoadSceneParameters(additive ? LoadSceneMode.Additive : LoadSceneMode.Single);
 #if UNITY_EDITOR && !USING_BUNDLE
-            var op = EditorSceneManager.LoadSceneAsyncInPlayMode(name, loadparams);
+            var op = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(name, loadparams);
 #else
             var op = SceneManager.LoadSceneAsync(name, loadparams);
 #endif
@@ -198,7 +194,7 @@ namespace Au
         private async Task<Object> LoadObjectEditor(string path, System.Type type)
         {
             await Task.Yield();
-            var obj = AssetDatabase.LoadAssetAtPath(path, type);
+            var obj = UnityEditor.AssetDatabase.LoadAssetAtPath(path, type);
             if (obj == null)
             {
                 log.Error($"load {path} failed !");
